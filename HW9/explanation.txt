@@ -1,0 +1,68 @@
+CODE EXPLAINATION:
+1(a)	overall is using typecasting to get the address of the float number and use the bitwise operator & to print out the address of the float in IEEE-754 format.Then prompt user to enter the binary form of a 
+float and store it inside a character array with length 33.then find out the sign bit ,the exponent part(8 bits) and lastly the mantissa part (23 bits).While for a double ,the exponent part(11 bits) and the mant
+issa part (52 bits).The bias of each 32 bits and 64 bits are 127 and 1023.The same logic and method applies to print binary form of a double and print double from binary form.
+	unsigned int* ptr = (unsigned int*)&f;: Declares an unsigned integer pointer ptr and assigns it the address of the float variable f. This allows accessing the memory location of f as if it were an unsign
+	ed integer pointer.
+	
+	for (int i = sizeof(unsigned int) * 8 - 1; i >= 0; i--) {: Starts a loop iterating over the bits of an unsigned integer (which size is determined by sizeof(unsigned int) * 8).
+	
+	printf("%d", (*ptr >> i) & 1);: Prints the individual bits of the float number pointed by ptr by shifting its binary representation to the right i times and applying a bitwise AND with 1 to extract the l
+	east significant bit.
+	
+	void printFloatFromBits(char binary[]) {: Defines a function printFloatFromBits that takes a character array binary as input, which is assumed to represent the bit pattern of a float
+	
+	The printDoubleBitPattern, printDoubleFromBits, and main functions follow a similar structure and logic to printFloatBitPattern and printFloatFromBits
+
+1(b)	typedef union {...} FloatUnion; and typedef union {...} DoubleUnion;: Define unions (FloatUnion and DoubleUnion) that allow accessing the same memory location with different interpretations: one as a flo
+	at or unsigned int, and the other as a double or unsigned long long.
+	
+	void printFloatBitPattern(float f) { ... }: Defines a function to print the bit pattern of a float.
+						    FloatUnion unionData; declares a variable of type FloatUnion.
+						    unionData.floatValue = f; assigns the provided float value to the floatValue member of the unionData variable.
+						    The for loop prints the bit pattern of the float value by accessing the bitPattern member of the unionData variable,which is an unsigned int with 4 bytes size.
+						    using the same logic as the method used in 1(a),the same goes to printing out the binary form of a double.
+	(the part below uses the same method converting the float in binary form to float in 1(a), the same goes to printing out the double)
+	void printFloatFromBits(char binary[]) { ... }: Defines a function to interpret a given bit pattern as a float.
+							Parses the binary string to extract the sign, exponent, and mantissa parts of the floating-point representation.
+							Uses these parts to calculate and print the corresponding float value.
+1(c)		float binaryToDecimal(char binary[]) { ... }
+		typedef union { ... } IEEE_754;: This declares a union named IEEE_754 that consists of a float and a struct with three bit fields.
+		struct { ... } parts: Represents the float broken down into its constituent parts: sign, exponent, and mantissa through bit fields
+		void printFloatBitPattern(float num) { ... }
+		IEEE_754 converter;: Declares a variable converter of type IEEE_754.
+		converter.f = num;: Stores the input float value num into the union's f field.
+		printf("Bit Pattern: %d", converter.parts.sign);: Prints the sign bit.
+		Loop for Exponent and Mantissa:
+		Loops through the bits of exponent and mantissa in converter.parts, printing their bit representation in the correct order(using the idea of the exponent part(8 bits) and the mantissa part (23 bi
+		ts).
+		Then, use the bitwise operator & to print out the address of the float in IEEE-754 format by shifting to the right one times through each loops..
+		The loops extract each bit (from most significant to least significant) and print it using bitwise operations.
+		Extracting bits from binary[]:
+		ieee.parts.sign = binary[0] - '0';: Converts the first character of binary[] to an integer and assigns it to the sign bit.
+		Extracting Exponent and Mantissa:
+		Loops through the elements of binary[] to extract bits and populate ieee.parts.exponent and ieee.parts.mantissa.
+		Converting Binary to Decimal:
+		Calculates the actual exponent: Subtracts the bias (127) from the exponent to get the actual exponent value.
+		Calculating the value:
+		If the exponent is within the valid range (>= -126 and <= 127), it calculates the decimal value using the mantissa and actual exponent.
+		If the exponent is outside the valid range, it sets the value to 0.
+		Adjusting the sign:
+		If the sign bit is 1, it makes the value negative.
+		The same is applied on printing out a double and coverting the binary form to a double
+
+2(1)Yes.1.175494350822287507968736537222245677818665556772087521508751706278417259454727172851560500000000000000000000000000000000e-38f is correct and indeed very close to the smallest positive normalized floati
+ng-point number in IEEE 754 standard for single-precision (32-bit) floating-point representation.No. The smallest floating point number as stated in the textbook which is 2^-126(aprroximately 1.17549*10^-38) is
+ technically the smallest positive floating point number for a smallest positive normalized floating point number.But the actual smallest number can be represented by a float is 2^-149 which is the denormalized 
+floating point number.Thus the smallest number can be represented by a float number is said to be 2^-149.
+
+2(2) As for the bit pattern of f = 0.0, in IEEE 754 single-precision floating-point representation, the sign bit is 0 (indicating positive), all exponent bits are 0, and the fraction bits are also all 0. So the
+bit pattern for f = 0.0 would be:Sign bit: 0(positive)/or 1(negative)
+				Exponent bits: 00000000
+				Fraction bits: 00000000000000000000000
+When combined, the bit pattern for f = 0.0 in IEEE 754 single-precision floating-point format is 00000000 00000000 00000000 00000000 or 10000000 00000000 00000000 00000000.
+
+2(3)f1 and f2 are initialized with values extremely close to the minimum positive float(normalized floating  point number).However, due to limited precision cause by the way floating-point numbers are stored in 
+computers,which is when the decimal part of a single precision floating point number cannot be eventually multiplied by 2 to an integer,(the value of the integer part (0 or 1) multiplied by 2 each time is record
+ed and expressed as a IEEE-754 binary expression of mantissa part),they are rounded to the closest representable value, which in this case is 1.1754943508222875079687365372222456778186655567720875215087517062784
+172594547271728515625e-38f.The comparison if(f1==f2) will return true because f1 and f2 are effectively the same value after rounding to the precision of a float.
